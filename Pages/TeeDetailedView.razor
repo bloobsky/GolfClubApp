@@ -1,0 +1,76 @@
+﻿@using GolfClubApp.Data
+@using GolfClubApp.Shared
+@using Microsoft.AspNetCore.Components
+@page "/tee_detailed/{id}"
+
+
+
+<h3>Tee Detailed View</h3>
+
+@if (DetailedTee != null)
+{
+    <h2>@DetailedTee.Name</h2>
+    <button class="btn btn-success" onclick="@DetailedTee">Book this tee!</button>
+    <h3>Bookings:</h3>
+    @if (DetailedTee.Bookings != null)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Time</th>
+                    <th>Players</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var booking in DetailedTee.Bookings)
+                {
+                    <tr>
+                        <td>@booking.Id</td>
+                        <td>@booking.BookingTime</td>
+                        <td>@booking.NamesToString()</td>
+                        <td><button class="btn btn-success" onclick="@(() => OpenBooking(booking.Id))">Open</button></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <h3><i>No Bookings</i></h3>
+    }
+
+}
+
+@code {
+    
+    [Inject]
+    public IGolfRep GolfRepository { get; set; }
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+    [Parameter]
+    public string Id { get; set; }
+
+    private Tee DetailedTee;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (int.TryParse(Id, out var _id))
+        {
+            DetailedTee = await GolfRepository.GetTee(_id);
+        }
+    }
+
+    void OpenBooking(int id)
+    {
+        NavigationManager.NavigateTo($"/teemanager/{id}");
+    }
+
+    void NewBooking()
+    {
+        NavigationManager.NavigateTo($"/teemanager/new/{DetailedTee.Id}");
+    }
+    
+}

@@ -19,7 +19,7 @@
             <tr>
                 <td>@t.Id</td>
                 <td>@t.Name</td>
-                <td><button class="btn btn-check" onclick="@(() => ViewTee(t.Id))">Check it out!</button></td>
+                <td><button class="btn btn-warning" @onclick="(() => ViewTee(t.Id)) ">Check this Tee Out !</button></td>
             </tr>
         }
     </tbody>
@@ -37,13 +37,11 @@
     protected override async Task OnInitializedAsync()
     {
         TeeList.AddRange(await GolfRepository.GetAllTees());
-        Tee tee = new Tee();
-        tee.Name = "First Tee";
     }
 
-    void ViewTee(int id)
+    public void ViewTee(int id)
     {
-        NavigationManager.NavigateTo($"/teeview/{id}");
+        NavigationManager.NavigateTo($"/tee_detailed/{id}");
     }
 
 
