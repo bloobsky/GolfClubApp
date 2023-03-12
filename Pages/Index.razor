@@ -8,8 +8,8 @@
 Use the side bar menu, meanwhile I wish you all the best in your upcoming golf !!!
 
 
-<!--
-@code
+<!--  For Adding entrys to Database 
+
 {
     [Inject]
     public Context context { get; set; } = null!;
@@ -23,7 +23,11 @@ Use the side bar menu, meanwhile I wish you all the best in your upcoming golf !
         golfer.Handicap = 10;
         context.Golfers.Add(golfer);
         await context.SaveChangesAsync();
-        
+        Tee tee = new Tee();
+        tee.Name = "First Tee";
+        context.Tees.Add(tee);
+        await context.SaveChangesAsync();
+
     }
 
 }
