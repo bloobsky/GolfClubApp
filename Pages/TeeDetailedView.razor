@@ -10,7 +10,7 @@
 @if (DetailedTee != null)
 {
     <h2>@DetailedTee.Name</h2>
-    <button class="btn btn-success" onclick="@DetailedTee">Book this tee!</button>
+    <button class="btn btn-success" onclick="@NewBooking">Book this tee!</button>
     <h3>Bookings:</h3>
     @if (DetailedTee.Bookings != null)
     {
@@ -25,13 +25,13 @@
             </thead>
             <tbody>
 
-                @foreach (var booking in DetailedTee.Bookings)
+                @foreach (var b in DetailedTee.Bookings)
                 {
                     <tr>
-                        <td>@booking.Id</td>
-                        <td>@booking.BookingTime</td>
-                        <td>@booking.NamesToString()</td>
-                        <td><button class="btn btn-success" onclick="@(() => OpenBooking(booking.Id))">Open</button></td>
+                        <td>@b.Id</td>
+                        <td>@b.BookingTime</td>
+                        <td>@b.NamesToString()</td>
+                        <td><button class="btn btn-success" @onclick="(() => OpenBooking(b.Id))">Open</button></td>
                     </tr>
                 }
             </tbody>

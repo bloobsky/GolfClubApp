@@ -38,6 +38,11 @@ namespace GolfClubApp.Data {
 
         public List<TeeBooking> TeeBookings { get; set; }
 
+        public override string ToString()
+        {
+            return $"{FirstName} {LastName}";
+        }
+
     }
 
     public class Tee
