@@ -1,21 +1,25 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
-
+using Microsoft.EntityFrameworkCore.Storage;
 using System.ComponentModel.DataAnnotations;
 
-namespace GolfClubApp.Data { 
+namespace GolfClubApp.Data {
     public class Context : DbContext
     {
         public DbSet<Golfer> Golfers { get; set; }
         public DbSet<Tee> Tees { get; set; }
         public DbSet<TeeBooking> TeeBookings { get; set; }
-
+        public string DatabasePathPointer { get; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlite($"Data Source={AppDomain.CurrentDomain.BaseDirectory}\\GolfClubApp.db")
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
         }
 
+        public Context() 
+        {
+            var folderPointer = AppDomain.CurrentDomain.BaseDirectory;
+            DatabasePathPointer = Path.Join(folderPointer, "GolfClubApp.db");
+        }
     }
 
     public class Golfer
