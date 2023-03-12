@@ -1,0 +1,84 @@
+﻿@using GolfClubApp.Data
+@using GolfClubApp.Shared
+@using Microsoft.AspNetCore.Components
+
+@page "/changes"
+@page "/changes/{Id}"
+
+<h3>Edit or Add Player Menu</h3>
+
+@if (EditedPlayer != null)
+{
+    <EditForm Model="@EditedPlayer" OnValidSubmit="@SaveGolfer">
+
+        <div class="input-group m-3">
+            <span class="input-group-text">First name</span>
+            <InputText class="form-control" @bind-Value="@EditedPlayer.FirstName"></InputText>
+        </div>
+
+        <div class="input-group m-3">
+            <span class="input-group-text">Last name</span>
+            <InputText class="form-control" @bind-Value="@EditedPlayer.LastName"></InputText>
+        </div>
+
+
+        <div class="input-group m-3">
+            <span class="input-group-text">Email address</span>
+            <InputText class="form-control" @bind-Value="@EditedPlayer.EmailAddress"></InputText>
+        </div>
+
+        <div class="input-group m-3">
+            <span class="input-group-text">Sex</span>
+            <InputText class="form-control" @bind-Value="@EditedPlayer.Sex"></InputText>
+        </div>
+
+        <div class="input-group m-3">
+            <span class="input-group-text">Handicap</span>
+            <InputNumber class="form-control" @bind-Value="@EditedPlayer.Handicap"></InputNumber>
+        </div>
+
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+        <button type="submit">Save</button>
+    </EditForm>
+}
+
+@code {
+
+    [Inject]
+    public IGolfRep GolfRepository { get; set; }
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    private Golfer EditedPlayer;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id is not null && int.TryParse(Id, out var _id))
+        {
+            EditedPlayer = await GolfRepository.GetGolfer(_id);
+        }
+        else
+        {
+            EditedPlayer = new Golfer();
+        }
+    }
+
+    async Task SaveGolfer()
+    {
+        if (EditedPlayer.Id <= 0)
+        {
+            await GolfRepository.AddGolfer(EditedPlayer);
+        }
+        else
+        {
+            await GolfRepository.ChangeGolfersData(EditedPlayer);
+        }
+
+        NavigationManager.NavigateTo("/golfers");
+    }
+
+}

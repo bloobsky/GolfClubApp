@@ -1,0 +1,59 @@
+﻿@using GolfClubApp.Data
+@using GolfClubApp.Shared
+@using Microsoft.AspNetCore.Components
+
+@page "/golfers"
+
+<h3>Golfers List:</h3>
+
+<table class="table">
+    <thead class="table-dark">
+        <tr>
+            <th>Player ID:</th>
+            <th>Player First Name:</th>
+            <th>Player Last Name:</th>
+            <th>Player Email Address:</th>
+            <th>Player Sex:</th>
+            <th>Player Handicap Level:</th>
+            <th></th> 
+            <th></th>
+            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var g in AllPlayers)
+        {
+            <tr>
+                <td>@g.Id</td>
+                <td>@g.FirstName</td>
+                <td>@g.LastName</td>
+                <td>@g.EmailAddress</td>
+                <td>@g.Sex</td>
+                <td>@g.Handicap</td>
+                <td><button class="btn btn-warning" onclick="@(() => EditGolfer(g.Id))">Edit Player</button></td>
+                <td><button class="btn btn-danger" onclick="@(() => EditGolfer(g.Id))">Remove Player</button></td>
+            </tr>
+        }
+    </tbod>
+</table>
+<button align="center" onclick="@CreateNewGolfer" class="btn btn-success">Add More Players</button>
+
+
+@code {
+        
+        [Inject]
+        public IGolfRep GolfRepository { get; set; }
+
+        [Inject]
+        public NavigationManager NavigationManager { get; set; }
+        public List<Golfer> AllPlayers { get; set; } = new();
+
+        override protected async Task OnInitializedAsync()
+        {
+            AllPlayers.AddRange(await GolfRepository.GetAllGolfers());
+        }
+
+        private void CreateNewGolfer() => NavigationManager.NavigateTo("/changes");
+        private void EditGolfer(int id) => NavigationManager.NavigateTo($"/changes/{id}");
+    
+}
