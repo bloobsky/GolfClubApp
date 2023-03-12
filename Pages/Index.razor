@@ -1,0 +1,31 @@
+﻿@page "/" 
+
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+<!-- 
+@code
+{
+    [Inject]
+    public Context context { get; set; } = null!;
+    override protected async Task OnInitializedAsync() // strona sie laduje, 
+    {
+        Golfer golfer = new Golfer();
+        golfer.FirstName = "John";
+        golfer.LastName = "Doe";
+        golfer.EmailAddress = "a@wp.pl";
+        golfer.Sex = "Male";
+        golfer.Handicap = 10;
+        context.Golfers.Add(golfer);
+        await context.SaveChangesAsync();
+        
+    }
+
+}
+-->
