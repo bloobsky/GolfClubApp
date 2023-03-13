@@ -63,7 +63,7 @@ namespace GolfClubApp.Data {
         public DateTime BookingTime { get; set; }
         public List<Golfer> Golfers { get; set; }
 
-        [Required]
+        public int BookedTeeId { get; set; }
         public Tee BookedTee { get; set; }
     }
 }

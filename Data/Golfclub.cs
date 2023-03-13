@@ -45,7 +45,7 @@ namespace GolfClubApp.Data
         }
 
         public async Task<IEnumerable<Golfer>> GetAllGolfers() =>
-            await _repo.Golfers.AsNoTracking().ToListAsync();
+            await _repo.Golfers.ToListAsync();
 
 
         public async Task<Golfer> AddGolfer(Golfer golfer)
@@ -57,7 +57,7 @@ namespace GolfClubApp.Data
         }
 
         public async Task<Golfer> GetGolfer(int id) =>
-            await _repo.Golfers.AsNoTracking().FirstAsync(x => x.Id == id);
+            await _repo.Golfers.FirstAsync(x => x.Id == id);
 
 
         public async Task<Golfer> ChangeGolfersData(Golfer golfer)
@@ -69,28 +69,34 @@ namespace GolfClubApp.Data
         }
 
         public async Task<IEnumerable<Tee>> GetAllTees() =>
-            await _repo.Tees.AsNoTracking().ToListAsync();
+            await _repo.Tees.ToListAsync();
 
 
         public async Task<Tee> GetTee(int id) =>
-            await _repo.Tees.AsNoTracking()
+            await _repo.Tees
                 .Include(tee => tee.Bookings)
                 .ThenInclude(booking => booking.Golfers)
                 .FirstAsync(x => x.Id == id);
 
         public async Task<TeeBooking> GetTeeBooking(int id) =>
             await _repo.TeeBookings
+            .Include(x=>x.BookedTee)
                 .Include(x => x.Golfers)
-                .AsNoTracking()
                 .FirstAsync(x => x.Id == id);
 
         public async Task<TeeBooking> SaveTeeBooking(TeeBooking booking)
         {
-            if (booking.BookedTee != null)
-                _repo.Tees.Attach(booking.BookedTee);
-
+            // if (booking.BookedTee.Id>0)
+            //    _repo.Tees.Attach(booking.BookedTee);
+            booking.BookedTee = null;
             if (booking.Golfers != null)
-                booking.Golfers.Select(golfer => _repo.Golfers.Attach(golfer));
+            {
+                foreach(var golfer in booking.Golfers)
+                {
+                    if((golfer.Id>0))
+                        _repo.Golfers.Attach(golfer);
+                }
+            }
 
             if (booking.Id > 0)
             {
@@ -100,8 +106,14 @@ namespace GolfClubApp.Data
             {
                 _repo.TeeBookings.Add(booking);
             }
-
-            await _repo.SaveChangesAsync();
+            try
+            {
+                await _repo.SaveChangesAsync();
+            }
+            catch(DbUpdateException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
             _repo.ChangeTracker.Clear();
             return booking;
         }
