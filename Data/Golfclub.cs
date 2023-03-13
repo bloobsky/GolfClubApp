@@ -69,11 +69,11 @@ namespace GolfClubApp.Data
         }
 
         public async Task<IEnumerable<Tee>> GetAllTees() =>
-            await _repo.Tees.AsNoTracking().ToListAsync();
+            await _repo.Tees.ToListAsync();
 
 
         public async Task<Tee> GetTee(int id) =>
-            await _repo.Tees.AsNoTracking()
+            await _repo.Tees
                 .Include(tee => tee.Bookings)
                 .ThenInclude(booking => booking.Golfers)
                 .FirstAsync(x => x.Id == id);
@@ -81,7 +81,6 @@ namespace GolfClubApp.Data
         public async Task<TeeBooking> GetTeeBooking(int id) =>
             await _repo.TeeBookings
                 .Include(x => x.Golfers)
-                .AsNoTracking()
                 .FirstAsync(x => x.Id == id);
 
         public async Task<TeeBooking> SaveTeeBooking(TeeBooking booking)

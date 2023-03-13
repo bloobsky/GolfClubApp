@@ -1,8 +1,7 @@
 ﻿@using GolfClubApp.Data
-@using GolfClubApp.Shared
 @using Microsoft.AspNetCore.Components
 @using Microsoft.JSInterop
-@using Microsoft.AspNetCore.Components.Forms
+
 
 @page "/teemanager/new/{teeId}"
 @page "/teemanager/{Id}"
@@ -16,11 +15,11 @@
     <EditForm Model="@Edited" OnValidSubmit="@SaveBooking">
         <div class="input-group">
             <span class="input-group-text">Booking date and time</span>
-            <InputDate class="form-control" @bind-Value="@BookingDate"></InputDate>
-            <InputSelect class="form-control" @bind-Value="@BookingTime">
-                @foreach (var option in GetTimeIntervals())
+            <InputDate class="form-control" @bind-Value="@BookingDateForm"></InputDate>
+            <InputSelect class="form-control" @bind-Value="@BookingTimeForm">
+                @foreach (var o in GetTimeIntervals())
                 {
-                    <option value="@option">@option</option>
+                    <option value="@o">@o</option>
                 }
             </InputSelect>
         </div>
@@ -36,9 +35,9 @@
             <span class="input-group-text">Golfers</span>
 
             <InputSelect class="form-control" @bind-Value="@SelectedGolfer">
-                @foreach (var selectableGolfer in SelectableGolfers)
+                @foreach (var sg in SelectableGolfers)
                 {
-                    <option value="@selectableGolfer.Id">@selectableGolfer.ToString()</option>
+                    <option value="@sg.Id">@sg.ToString()</option>
                 }
             </InputSelect>
             <button type="button" class="btn btn-primary" onclick="@AddGolfer">Add player</button>
@@ -75,8 +74,8 @@
         if (Id is not null && int.TryParse(Id, out var _id))
         {
             Edited = await GolfRepository.GetTeeBooking(_id);
-            BookingDate = DateOnly.FromDateTime(Edited.BookingTime);
-            BookingTime = TimeOnly.FromDateTime(Edited.BookingTime);
+            BookingDateForm = DateOnly.FromDateTime(Edited.BookingTime);
+            BookingTimeForm = TimeOnly.FromDateTime(Edited.BookingTime);
         }
         else
         {
@@ -99,13 +98,13 @@
 
     async Task SaveBooking()
     {
-        Edited.BookingTime = new DateTime(BookingDate.Year, BookingDate.Month, BookingDate.Day, BookingTime.Hour,
-            BookingTime.Minute, BookingTime.Second);
+        Edited.BookingTime = new DateTime(BookingDateForm.Year, BookingDateForm.Month, BookingDateForm.Day, BookingTimeForm.Hour,
+            BookingTimeForm.Minute, BookingTimeForm.Second);
         await GolfRepository.SaveTeeBooking(Edited);
         NavigationManager.NavigateTo($"/tee_detailed/{Edited.Id}");
     }
-    DateOnly BookingDate { get; set; } = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
-    TimeOnly BookingTime { get; set; } = new(10, 0, 0);
+    DateOnly BookingDateForm { get; set; } = DateOnly.FromDateTime(DateTime.Now.AddDays(1));
+    TimeOnly BookingTimeForm { get; set; } = new(10, 0, 0);
     List<TimeOnly> GetTimeIntervals()
     {
         var intervals = new List<TimeOnly>();
