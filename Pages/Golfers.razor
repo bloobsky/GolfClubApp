@@ -6,6 +6,18 @@
 
 <h3>Golfers List:</h3>
 
+<div class="btn-group" role="group" aria-label="Sort golfers">
+    <button class="btn btn-secondary" @onclick="ShowAll">Show All Golfers</button>
+    <button class="btn btn-secondary" @onclick="SortAscending">Sort by Last Name (Ascending)</button>
+    <button class="btn btn-secondary" @onclick="SortDescending">Sort by Last Name (Descending)</button>
+    <button class="btn btn-secondary" @onclick="FilterByMale">View All Male Golfers</button>
+    <button class="btn btn-secondary" @onclick="FilterByFemale">View All Female Golfers</button>
+    <button class="btn btn-secondary" @onclick="FilterByBelow10">View Golfers with Handicap below 10</button>
+    <button class="btn btn-secondary" @onclick="FilterByAbove20">View Golfers with Handicap above 20</button>
+    <button class="btn btn-secondary" @onclick="FilterBetween">View Golfers with Handicap from 10-20</button>
+
+</div>
+
 <table class="table">
     <thead class="table-dark">
         <tr>
@@ -15,13 +27,13 @@
             <th>Player Email Address:</th>
             <th>Player Sex:</th>
             <th>Player Handicap Level:</th>
-            <th></th> 
             <th></th>
-            
+            <th></th>
+
         </tr>
     </thead>
     <tbody>
-        @foreach (var g in AllPlayers)
+        @foreach (var g in FilteredPlayers)
         {
             <tr>
                 <td>@g.Id</td>
@@ -30,8 +42,7 @@
                 <td>@g.EmailAddress</td>
                 <td>@g.Sex</td>
                 <td>@g.Handicap</td>
-                <td><button class="btn btn-warning" onclick="@(() => EditGolfer(g.Id))">Edit Player</button></td>
-                <td><button class="btn btn-danger" onclick="@(() => EditGolfer(g.Id))">Remove Player</button></td>
+                <td><button class="btn btn-warning" onclick="@(() => EditGolfer(g.Id))">Edit or Remove Player</button></td>
             </tr>
         }
     </tbody>
@@ -40,20 +51,63 @@
 
 
 @code {
-        
-        [Inject]
-        public IGolfRep GolfRepository { get; set; }
 
-        [Inject]
-        public NavigationManager NavigationManager { get; set; }
-        public List<Golfer> AllPlayers { get; set; } = new();
+    [Inject]
+    public IGolfRep GolfRepository { get; set; }
 
-        override protected async Task OnInitializedAsync()
-        {
-            AllPlayers.AddRange(await GolfRepository.GetAllGolfers());
-        }
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+    public List<Golfer> AllPlayers { get; set; } = new();
+    public List<Golfer> FilteredPlayers { get; set; } = new();
 
-        private void CreateNewGolfer() => NavigationManager.NavigateTo("/changes");
-        private void EditGolfer(int id) => NavigationManager.NavigateTo($"/changes/{id}");
-    
+    override protected async Task OnInitializedAsync()
+    {
+        AllPlayers.AddRange(await GolfRepository.GetAllGolfers());
+    }
+
+    private void CreateNewGolfer() => NavigationManager.NavigateTo("/changes");
+    private void EditGolfer(int id) => NavigationManager.NavigateTo($"/changes/{id}");
+
+    private void SortAscending()
+    {
+        FilteredPlayers = AllPlayers.OrderBy(g => g.LastName).ToList();
+    }
+
+    private void ShowAll()
+    {
+        FilteredPlayers = AllPlayers.ToList();
+    }
+
+
+    private void SortDescending()
+    {
+        FilteredPlayers = AllPlayers.OrderByDescending(g => g.LastName).ToList();
+
+    }
+
+    private void FilterByMale()
+    {
+        FilteredPlayers = AllPlayers.Where(g => g.Sex == "Male").ToList();
+    }
+
+    private void FilterByFemale()
+    {
+        FilteredPlayers = AllPlayers.Where(g => g.Sex == "Female").ToList();
+    }
+
+    private void FilterByBelow10()
+    {
+        FilteredPlayers = AllPlayers.Where(g => g.Handicap < 10).ToList();
+    }
+
+    private void FilterByAbove20()
+    {
+        FilteredPlayers = AllPlayers.Where(g => g.Handicap > 20).ToList();
+    }
+
+    private void FilterBetween()
+    {
+        FilteredPlayers = AllPlayers.Where(g => g.Handicap < 20 && g.Handicap > 10).ToList();
+    }
+
 }

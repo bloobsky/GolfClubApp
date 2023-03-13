@@ -9,6 +9,8 @@ namespace GolfClubApp.Data
         Task<IEnumerable<Golfer>> GetAllGolfers();
         Task<Golfer> AddGolfer(Golfer golfer);
         Task<Golfer> GetGolfer(int id);
+
+        Task DeleteGolfer(int id);
         Task<Golfer> ChangeGolfersData(Golfer golfer);
         Task<IEnumerable<Tee>> GetAllTees();
         Task<Tee> GetTee(int id);
@@ -29,24 +31,21 @@ namespace GolfClubApp.Data
             if (_repo.Database.CanConnect()) return;
 
             _repo.Database.EnsureCreated();
-            CreateTees();
-        }
-
-        private void CreateTees()
-        {
-            _repo.Tees.Add(new Tee { Name = "Tee One" });
-            _repo.Tees.Add(new Tee { Name = "Tee Two" });
-            _repo.Tees.Add(new Tee { Name = "Tee Three" });
-            _repo.Tees.Add(new Tee { Name = "Tee Four" });
-            _repo.Tees.Add(new Tee { Name = "Tee Five" });
-            _repo.Tees.Add(new Tee { Name = "Tee Six" });
-            _repo.SaveChanges();
-            _repo.ChangeTracker.Clear();
         }
 
         public async Task<IEnumerable<Golfer>> GetAllGolfers() =>
             await _repo.Golfers.AsNoTracking().ToListAsync();
 
+        public async Task DeleteGolfer(int id)
+        {
+            var golferToRemove = await _repo.Golfers.FindAsync(id);
+            if (golferToRemove != null)
+            {
+                _repo.Golfers.Remove(golferToRemove);
+                await _repo.SaveChangesAsync();
+                _repo.ChangeTracker.Clear();
+            }
+        }
 
         public async Task<Golfer> AddGolfer(Golfer golfer)
         {
@@ -55,6 +54,7 @@ namespace GolfClubApp.Data
             _repo.ChangeTracker.Clear();
             return golfer;
         }
+
 
         public async Task<Golfer> GetGolfer(int id) =>
             await _repo.Golfers.AsNoTracking().FirstAsync(x => x.Id == id);

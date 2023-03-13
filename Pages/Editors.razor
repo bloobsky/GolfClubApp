@@ -40,6 +40,11 @@
         <DataAnnotationsValidator></DataAnnotationsValidator>
         <ValidationSummary></ValidationSummary>
         <button type="submit">Save</button>
+        <!-- Button to remove golfer -->
+        @if (EditedPlayer.Id > 0)
+        {
+            <button type="button" class="btn btn-danger" @onclick="() => RemoveGolfer(EditedPlayer.Id)">Delete</button>
+        }
     </EditForm>
 }
 
@@ -80,5 +85,12 @@
 
         NavigationManager.NavigateTo("/golfers");
     }
+
+    async Task RemoveGolfer(int playerId)
+    {
+        await GolfRepository.DeleteGolfer(playerId);
+        NavigationManager.NavigateTo("/golfers");
+    }
+
 
 }
